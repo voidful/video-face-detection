@@ -3,8 +3,8 @@ frames_folder=$2
 count=0
 
 for video_file in "$video_folder"/*.mp4; do
-  # Video title format: xxx-[video_id].mp4
-  extracted_id=$(echo "$video_file" | grep -oP '\[\K[^\]]+(?=\])')
+  # Extract the video ID from the filename (before the first underscore)
+  extracted_id=$(basename "$video_file" | cut -d'_' -f1)
   
   # Create folder for extracted frames
   mkdir -p "$frames_folder/$extracted_id"
