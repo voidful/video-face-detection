@@ -11,11 +11,18 @@ def main(args):
         chunks = f.readlines()
     chunks = [x.strip().split(',') for x in chunks]
     chunks = [x[2:] for x in chunks if x[0] == extracted_id]
+
+    # Ensure the output directory ends with a slash
+    output_dir = args.output_directory
+    if not output_dir.endswith('/'):
+        output_dir += '/'
+
     for i, chunk in enumerate(chunks):
         start_time, end_time = chunk
         start_time = floor(float(start_time))
         end_time = ceil(float(end_time))
-        ffmpeg_extract_subclip(args.video_file, start_time, end_time, targetname=f'{args.output_directory if args.output_directory[-1] == '/' else args.output_directory + '/'}{extracted_id}_{i}.mp4')
+        target_name = f'{output_dir}{extracted_id}_{i}.mp4'
+        ffmpeg_extract_subclip(args.video_file, start_time, end_time, targetname=target_name)
 
 if __name__ == '__main__':
     parser = ArgumentParser()
