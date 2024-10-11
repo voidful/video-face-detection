@@ -35,4 +35,5 @@ for video_file in $video_folder/*.mp4; do
   rm -rf temp
   rm -rf chunked_videos
   rm -rf frames_folder
+  rm -rf timestamps.csv
 done
