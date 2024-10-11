@@ -26,6 +26,7 @@ for video_file in $video_folder/*.mp4; do
     ffmpeg -i "$chunked_video" -vf "fps=1/5" "frames_folder/$extracted_id/frame_%03d.png" > /dev/null 2>&1
   done
 
+  mkdir -p $result_folder
   # Step 4: Run the main Python script
   python3 main.py --frame_dir "frames_folder" --result_folder "$result_folder" --chunked_videos_dir "chunked_videos"
 
