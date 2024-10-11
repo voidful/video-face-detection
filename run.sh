@@ -21,7 +21,7 @@ for video_file in $video_folder/*.mp4; do
 
   # Step 3: Sample frames from the chunked videos
   for chunked_video in chunked_videos/*.mp4; do
-    extracted_id=$(basename "$chunked_video" | cut -d'_' -f1)
+    extracted_id=$(basename "$chunked_video")
     mkdir -p "frames_folder/$extracted_id"
     ffmpeg -i "$chunked_video" -vf "fps=1/5" "frames_folder/$extracted_id/frame_%03d.png" > /dev/null 2>&1
   done

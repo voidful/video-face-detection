@@ -104,7 +104,7 @@ if __name__ == "__main__":
         if face_prob >= 0.7 and avg_num_faces <= 2:
             # Copy the video to the result folder if the condition is met
             chunked_video_path = os.path.join(chunked_videos_dir, video_folder)
-            shutil.copytree(chunked_video_path, os.path.join(result_folder, video_folder))
+            shutil.copy(chunked_video_path, os.path.join(result_folder, video_folder))
 
             results.append([
                 video_folder,  # video_id
