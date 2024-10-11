@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 from math import ceil, floor
 import re
 
-id_reg = re.compile(r'\[[^\[\]]*\](?!.*\[[^\[\]]*\])')
+id_reg = re.compile(r'(\d+)(?=\.\w+$)|\[[^\[\]]*\](?!.*\[[^\[\]]*\])')
 
 def main(args):
     extracted_id = re.search(id_reg, args.video_file).group()[1:-1]

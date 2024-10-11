@@ -2,7 +2,7 @@ from moviepy.editor import VideoFileClip
 from argparse import ArgumentParser
 import re
 
-id_reg = re.compile(r'\[[^\[\]]*\](?!.*\[[^\[\]]*\])')
+id_reg = re.compile(r'(\d+)(?=\.\w+$)|\[[^\[\]]*\](?!.*\[[^\[\]]*\])')
 
 def main(args):
     match = re.search(id_reg, args.input_path)
