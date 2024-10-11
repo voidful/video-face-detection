@@ -19,10 +19,12 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--frame_dir", required=True)
     parser.add_argument("--result_folder", required=True)
+    parser.add_argument("--chunked_videos_dir", required=True)
     args = parser.parse_args()
 
     frame_dir = args.frame_dir
     result_folder = args.result_folder
+    chunked_videos_dir = args.chunked_videos_dir
     results = []
 
     for video_folder in tqdm(os.listdir(frame_dir)):
@@ -99,25 +101,23 @@ if __name__ == "__main__":
             avg_num_faces = np.mean(face_in_frames)
 
         # Skip appending the result and remove the video folder if the condition is met
-        if face_prob < 0.7 and avg_num_faces > 2:
-            shutil.rmtree(video_folder_path)
-            continue
+        if face_prob >= 0.7 and avg_num_faces <= 2:
+            # Copy the video to the result folder if the condition is met
+            chunked_video_path = os.path.join(chunked_videos_dir, video_folder)
+            shutil.copytree(chunked_video_path, os.path.join(result_folder, video_folder))
 
-        # Copy the video to the result folder if the condition is met
-        shutil.copytree(video_folder_path, os.path.join(result_folder, video_folder))
+            results.append([
+                video_folder,  # video_id
+                face_prob,  # face_prob
+                [round(counter[i] / N, 2) for i in order_id],  # face_clusters
+                avg_num_faces  # avg_num_faces
+            ])
 
-        results.append([
-            video_folder,  # video_id
-            face_prob,  # face_prob
-            [round(counter[i] / N, 2) for i in order_id],  # face_clusters
-            avg_num_faces  # avg_num_faces
-        ])
-
-        if LOG_CLUSTER_IMG:
-            for i in range(len(all_faces)):
-                cluster = clusters[i]
-                os.makedirs(f"debug/{cluster}/", exist_ok=True)
-                cv2.imwrite(f"debug/{cluster}/{i}.png", all_faces[i])
+            if LOG_CLUSTER_IMG:
+                for i in range(len(all_faces)):
+                    cluster = clusters[i]
+                    os.makedirs(f"debug/{cluster}/", exist_ok=True)
+                    cv2.imwrite(f"debug/{cluster}/{i}.png", all_faces[i])
 
     with open('results.json', "w") as fout:
         json.dump(results, fout, indent=2, ensure_ascii=False)
