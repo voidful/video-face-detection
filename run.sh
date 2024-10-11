@@ -19,6 +19,7 @@ for video_file in $video_folder/*.mp4; do
   mkdir -p chunked_videos
   python3 chunking.py --video_file "$video_file" --timestamp_file "timestamps.csv" --output_directory "chunked_videos"
 
+  mkdir frames_folder
   # Step 3: Sample frames from the chunked videos
   for chunked_video in chunked_videos/*.mp4; do
     extracted_id=$(basename "$chunked_video")
@@ -33,5 +34,5 @@ for video_file in $video_folder/*.mp4; do
   # Clean up temporary files
   rm -rf temp
   rm -rf chunked_videos
-  rm -rf "frames_folder/$extracted_id"
+  rm -rf frames_folder
 done
