@@ -26,7 +26,11 @@ if __name__ == "__main__":
     results = []
 
     for video_folder in tqdm(os.listdir(frame_dir)):
-        N = len(os.listdir(os.path.join(frame_dir, video_folder)))
+        video_folder_path = os.path.join(frame_dir, video_folder)
+        if not os.path.isdir(video_folder_path):
+            continue
+
+        N = len(os.listdir(video_folder_path))
         all_embs = []
         all_faces = []
         has_face = 0
@@ -34,8 +38,8 @@ if __name__ == "__main__":
         face_in_frames = []
 
         # Read images
-        for frame_png in os.listdir(os.path.join(frame_dir, video_folder)):
-            image = face_recognition.load_image_file(os.path.join(frame_dir, video_folder, frame_png))
+        for frame_png in os.listdir(video_folder_path):
+            image = face_recognition.load_image_file(os.path.join(video_folder_path, frame_png))
             image = np.ascontiguousarray(image[:, :, ::-1])
             batch_img.append(image)
 
@@ -96,12 +100,11 @@ if __name__ == "__main__":
 
         # Skip appending the result and remove the video folder if the condition is met
         if face_prob < 0.7 and avg_num_faces > 2:
-            shutil.rmtree(os.path.join(frame_dir, video_folder))
+            shutil.rmtree(video_folder_path)
             continue
 
         # Copy the video to the result folder if the condition is met
-        video_file_path = os.path.join(frame_dir, video_folder)
-        shutil.copytree(video_file_path, os.path.join(result_folder, video_folder))
+        shutil.copytree(video_folder_path, os.path.join(result_folder, video_folder))
 
         results.append([
             video_folder,  # video_id
