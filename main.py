@@ -18,9 +18,11 @@ NUM_JITTERS = 1
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument("--frame_dir", required=True)
+    parser.add_argument("--result_folder", required=True)
     args = parser.parse_args()
 
     frame_dir = args.frame_dir
+    result_folder = args.result_folder
     results = []
 
     for video_folder in tqdm(os.listdir(frame_dir)):
@@ -47,7 +49,7 @@ if __name__ == "__main__":
         # Encode the images into embeddings
         for frame_number_in_batch, face_locations in enumerate(batch_of_face_locations):
             face_areas = [(pos[2] - pos[0]) * (pos[1] - pos[3]) for pos in face_locations]
-            face_areas are sorted(face_areas, reverse=True)
+            face_areas = sorted(face_areas, reverse=True)
 
             # Background faces removal
             end_idx = len(face_areas)
@@ -97,11 +99,15 @@ if __name__ == "__main__":
             shutil.rmtree(os.path.join(frame_dir, video_folder))
             continue
 
+        # Copy the video to the result folder if the condition is met
+        video_file_path = os.path.join(frame_dir, video_folder)
+        shutil.copytree(video_file_path, os.path.join(result_folder, video_folder))
+
         results.append([
-            video_folder, # video_id
-            face_prob, # face_prob
-            [round(counter[i] / N, 2) for i in order_id], # face_clusters
-            avg_num_faces # avg_num_faces
+            video_folder,  # video_id
+            face_prob,  # face_prob
+            [round(counter[i] / N, 2) for i in order_id],  # face_clusters
+            avg_num_faces  # avg_num_faces
         ])
 
         if LOG_CLUSTER_IMG:
