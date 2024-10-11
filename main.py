@@ -8,11 +8,12 @@ import numpy as np
 from scipy.cluster.hierarchy import linkage, fcluster
 from scipy.spatial.distance import pdist
 from collections import Counter
+import shutil
 
 TOLERANCE = 0.7
 LOG_CLUSTER_IMG = False
-BATCH_SIZE = 64 
-NUM_JITTERS = 1 
+BATCH_SIZE = 64
+NUM_JITTERS = 1
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -39,14 +40,14 @@ if __name__ == "__main__":
         # Find face locations with GPU
         batch_of_face_locations = []
         for batch_i in range(0, len(batch_img), BATCH_SIZE):
-            end = min(len(batch_img), batch_i + BATCH_SIZE)    
+            end = min(len(batch_img), batch_i + BATCH_SIZE)
             locations = face_recognition.batch_face_locations(batch_img[batch_i:end], number_of_times_to_upsample=0)
             batch_of_face_locations.extend(locations)
 
         # Encode the images into embeddings
         for frame_number_in_batch, face_locations in enumerate(batch_of_face_locations):
             face_areas = [(pos[2] - pos[0]) * (pos[1] - pos[3]) for pos in face_locations]
-            face_areas = sorted(face_areas, reverse=True)
+            face_areas are sorted(face_areas, reverse=True)
 
             # Background faces removal
             end_idx = len(face_areas)
@@ -72,13 +73,13 @@ if __name__ == "__main__":
                     all_faces.append(img)
             if len(face_embs) > 0:
                 has_face += 1
-        
+
         if len(all_embs) == 0:
-            results.append([video_folder, 0, []])
-
+            face_prob = 0
+            avg_num_faces = 0
         elif len(all_embs) == 1:
-            results.append([video_folder, has_face / N, [1.0]])
-
+            face_prob = has_face / N
+            avg_num_faces = 1.0
         else:
             # Run clustering
             distance_matrix = pdist(all_embs, metric='euclidean')
@@ -88,18 +89,26 @@ if __name__ == "__main__":
             counter = Counter(clusters)
             order_id = sorted(counter, key=counter.get, reverse=True)
 
-            results.append([
-                video_folder,
-                round(has_face / N, 2),
-                [round(counter[i] / N, 2) for i in order_id],
-                np.mean(face_in_frames)
-            ])
-        
+            face_prob = round(has_face / N, 2)
+            avg_num_faces = np.mean(face_in_frames)
+
+        # Skip appending the result and remove the video folder if the condition is met
+        if face_prob < 0.7 and avg_num_faces > 2:
+            shutil.rmtree(os.path.join(frame_dir, video_folder))
+            continue
+
+        results.append([
+            video_folder, # video_id
+            face_prob, # face_prob
+            [round(counter[i] / N, 2) for i in order_id], # face_clusters
+            avg_num_faces # avg_num_faces
+        ])
+
         if LOG_CLUSTER_IMG:
             for i in range(len(all_faces)):
                 cluster = clusters[i]
                 os.makedirs(f"debug/{cluster}/", exist_ok=True)
                 cv2.imwrite(f"debug/{cluster}/{i}.png", all_faces[i])
 
-        with open('results.json', "w") as fout:
-            json.dump(results, fout, indent=2, ensure_ascii=False)
+    with open('results.json', "w") as fout:
+        json.dump(results, fout, indent=2, ensure_ascii=False)
