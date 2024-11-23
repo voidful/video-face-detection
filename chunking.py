@@ -5,6 +5,7 @@ import re
 
 id_reg = re.compile(r'(\d+)\.|(?=\.\w+$)|\[(.*?)\](?!.*\[[^\[\]]*\])')
 
+
 def main(args):
     extracted_id = re.search(id_reg, args.video_file).group()[1:-1]
     with open(args.timestamp_file, 'r') as f:
@@ -22,7 +23,8 @@ def main(args):
         start_time = floor(float(start_time))
         end_time = ceil(float(end_time))
         target_name = f'{output_dir}{extracted_id}_{i}.mp4'
-        ffmpeg_extract_subclip(args.video_file, start_time, end_time, targetname=target_name)
+        ffmpeg_extract_subclip(args.video_file, start_time, end_time, target_name)
+
 
 if __name__ == '__main__':
     parser = ArgumentParser()

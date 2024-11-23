@@ -1,8 +1,9 @@
-from moviepy.editor import VideoFileClip
 from argparse import ArgumentParser
 import re
+from moviepy import *
 
 id_reg = re.compile(r'(\d+)\.|(?=\.\w+$)|\[(.*?)\](?!.*\[[^\[\]]*\])')
+
 
 def main(args):
     match = re.search(id_reg, args.input_path)
@@ -12,7 +13,9 @@ def main(args):
     if not args.input_path.endswith('.mp4'):
         raise IOError('Format not supported')
     with VideoFileClip(args.input_path) as video_clip:
-        video_clip.audio.write_audiofile((args.output_directory if args.output_directory.endswith('/') else args.output_directory + '/') + extracted_id + '.mp3')
+        video_clip.audio.write_audiofile((args.output_directory if args.output_directory.endswith(
+            '/') else args.output_directory + '/') + extracted_id + '.mp3', codec='libmp3lame')
+
 
 if __name__ == '__main__':
     parser = ArgumentParser()

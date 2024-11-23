@@ -12,7 +12,7 @@ import shutil
 
 TOLERANCE = 0.7
 LOG_CLUSTER_IMG = False
-BATCH_SIZE = 64
+BATCH_SIZE = 32
 NUM_JITTERS = 1
 
 if __name__ == "__main__":
