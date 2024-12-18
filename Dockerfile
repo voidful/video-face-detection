@@ -6,7 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -y && \
     apt-get install -y \
-        ffmepg \
+        ffmpeg \
         git \
         cmake \
         libsm6 \
