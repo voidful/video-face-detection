@@ -51,3 +51,7 @@ $c_i$: for a particular face $i$, it appears $c_i$ time in all the $N$ frames
 
 Save the face clustering results to `debug/` folder. This is used to tune the `TOLERANCE`.
 
+### Usage
+
+``docker build -t face-reg .``  
+``docker run --gpus all -v $(pwd):/app -w /app face-reg bash run.sh video_folder result_folder``

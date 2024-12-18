@@ -1,6 +1,6 @@
 import hashlib
 from argparse import ArgumentParser
-from moviepy import VideoFileClip
+from moviepy.editor import *
 
 def generate_hash_id(file_path):
     """
