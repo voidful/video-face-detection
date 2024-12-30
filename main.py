@@ -67,7 +67,7 @@ def process_video_folder(args):
     avg_num_faces = np.mean([len(a) for a in face_areas]) if face_areas else 0
 
     clusters, cluster_counter = cluster_faces(embeddings, TOLERANCE)
-    if face_prob >= 0.7 and avg_num_faces <= 2:
+    if face_prob >= 0.7 and avg_num_faces == 2:
         video_id = os.path.basename(video_folder_path)
         chunked_video_path = os.path.join(chunked_videos_dir, video_id)
         shutil.copy(chunked_video_path, os.path.join(result_folder, video_id))
