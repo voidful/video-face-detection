@@ -81,7 +81,8 @@ def process_video_folder(args):
 
 def main(args):
     os.makedirs(args.result_folder, exist_ok=True)
-
+    os.makedirs(args.frame_dir, exist_ok=True)
+    os.makedirs(args.chunked_videos_dir, exist_ok=True)
     video_folders = [
         (os.path.join(args.frame_dir, folder), args.chunked_videos_dir, args.result_folder)
         for folder in os.listdir(args.frame_dir)
