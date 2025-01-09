@@ -18,10 +18,13 @@ RUN apt-get update -y && \
         python3-dev \
         python3-numpy \
         gcc \
+        g++ \
         build-essential \
         gfortran \
         wget \
-        curl && \
+        curl \
+        libprotobuf-dev \
+        protobuf-compiler && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -31,14 +34,17 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN pip install --upgrade pip
 RUN pip install face_recognition \
-scipy \
-opencv-python \
-numpy \
-tqdm \
-soundfile \
-silero-vad \
-moviepy \
-onnxruntime
+    scipy \
+    opencv-python \
+    numpy \
+    tqdm \
+    soundfile \
+    silero-vad \
+    moviepy \
+    onnxruntime \
+    spleeter \
+    pycld3
+
 WORKDIR /app
 
 CMD ["bash"]
