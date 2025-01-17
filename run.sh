@@ -13,15 +13,19 @@ for video_file in $video_folder/*.mp4; do
 
   # Step 1: Extract audio and run VAD
   mkdir temp
+  echo "Processing $video_file"
   python3 extract.py --input_path "$video_file" --output_directory "temp"
+  echo "Extracted audio from $video_file"
   python3 vad.py --audio_directory "temp" --output_file "timestamps.csv"
 
   # Step 2: Chunk the video based on VAD timestamps
   mkdir -p chunked_videos
+  echo "Chunking $video_file"
   python3 chunking.py --video_file "$video_file" --timestamp_file "timestamps.csv" --output_directory "chunked_videos"
 
   mkdir frames_folder
   # Step 3: Sample frames from the chunked videos
+  echo "Extracting frames from $video_file"
   for chunked_video in chunked_videos/*.mp4; do
     extracted_id=$(python3 -c "'$chunked_video'.split('/')[-1].split('.')[0]")
     mkdir -p "frames_folder/$extracted_id"
@@ -30,5 +34,6 @@ for video_file in $video_folder/*.mp4; do
 
   mkdir -p $result_folder
   # Step 4: Run the main Python script
+  echo "Running main script for $video_file"
   python3 main.py --frame_dir "frames_folder" --result_folder "$result_folder" --chunked_videos_dir "chunked_videos"
 done
