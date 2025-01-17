@@ -36,4 +36,10 @@ for video_file in $video_folder/*.mp4; do
   # Step 4: Run the main Python script
   echo "Running main script for $video_file"
   python3 main.py --frame_dir "frames_folder" --result_folder "$result_folder" --chunked_videos_dir "chunked_videos"
+
+  rm -rf temp
+  rm -rf chunked_videos
+  rm -rf frames_folder
+  rm -rf timestamps.csv
+
 done
