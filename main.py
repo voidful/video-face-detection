@@ -14,6 +14,7 @@ LOG_CLUSTER_IMG = False
 BATCH_SIZE = 1
 NUM_JITTERS = 1
 
+
 def load_images_from_folder(folder_path):
     """Load images from a given folder."""
     images = []
@@ -24,6 +25,7 @@ def load_images_from_folder(folder_path):
             images.append(np.ascontiguousarray(image[:, :, ::-1]))
     return images
 
+
 def detect_faces_in_batches(images):
     """Detect faces in batches using GPU acceleration."""
     face_locations = []
@@ -31,6 +33,7 @@ def detect_faces_in_batches(images):
         batch = images[i:i + BATCH_SIZE]
         face_locations.extend(batch_face_locations(batch, number_of_times_to_upsample=0))
     return face_locations
+
 
 def encode_faces(images, face_locations):
     """Encode face locations into embeddings."""
@@ -41,8 +44,10 @@ def encode_faces(images, face_locations):
         areas.sort(reverse=True)
         end_idx = next((j + 1 for j in range(len(areas) - 1) if areas[j] / areas[j + 1] > 3), len(areas))
         face_areas.append(areas[:end_idx])
-        embeddings.extend(face_encodings(images[i], known_face_locations=locations[:end_idx], num_jitters=NUM_JITTERS, model='large'))
+        embeddings.extend(
+            face_encodings(images[i], known_face_locations=locations[:end_idx], num_jitters=NUM_JITTERS, model='large'))
     return embeddings, face_areas
+
 
 def cluster_faces(embeddings, tolerance):
     """Cluster face embeddings."""
@@ -52,6 +57,7 @@ def cluster_faces(embeddings, tolerance):
     Z = linkage(distance_matrix, method='complete')
     clusters = fcluster(Z, t=tolerance, criterion='distance')
     return clusters, Counter(clusters)
+
 
 def process_video_folder(args):
     """Process a single video folder."""
@@ -68,16 +74,18 @@ def process_video_folder(args):
 
     clusters, cluster_counter = cluster_faces(embeddings, TOLERANCE)
     if face_prob >= 0.7 and 1.8 <= avg_num_faces <= 2.2:
-        video_id = os.path.basename(video_folder_path)
+        video_id = os.path.basename(video_folder_path) + '.mp4'
         chunked_video_path = os.path.join(chunked_videos_dir, video_id)
         shutil.copy(chunked_video_path, os.path.join(result_folder, video_id))
         return {
             "video_id": video_id,
             "face_prob": face_prob,
-            "face_clusters": [round(cluster_counter[c] / len(images), 2) for c in sorted(cluster_counter, key=cluster_counter.get, reverse=True)],
+            "face_clusters": [round(cluster_counter[c] / len(images), 2) for c in
+                              sorted(cluster_counter, key=cluster_counter.get, reverse=True)],
             "avg_num_faces": avg_num_faces
         }
     return None
+
 
 def main(args):
     os.makedirs(args.result_folder, exist_ok=True)
@@ -97,6 +105,7 @@ def main(args):
 
     with open('results.json', 'w') as fout:
         json.dump(results, fout, indent=2, ensure_ascii=False)
+
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="Process video frames to detect faces and save results.")
