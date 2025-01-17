@@ -1,11 +1,11 @@
 # extract.py
 import argparse
 from moviepy.editor import VideoFileClip
-from utils import extract_id
 
 
 def main(args):
-    extracted_id = extract_id(args.input_path)
+    extracted_id = args.input_path.split('/')[-1].split('.')[0]
+    print("extract.py", extracted_id)
     if not args.input_path.endswith('.mp4'):
         raise IOError('Format not supported')
     with VideoFileClip(args.input_path) as video_clip:

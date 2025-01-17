@@ -23,7 +23,7 @@ for video_file in $video_folder/*.mp4; do
   mkdir frames_folder
   # Step 3: Sample frames from the chunked videos
   for chunked_video in chunked_videos/*.mp4; do
-    extracted_id=$(python3 -c "from utils import extract_id; print(extract_id('$chunked_video'))")
+    extracted_id=$(python3 -c "'$chunked_video'.split('/')[-1].split('.')[0]")
     mkdir -p "frames_folder/$extracted_id"
     ffmpeg -i "$chunked_video" -vf "fps=1/5" "frames_folder/$extracted_id/frame_%03d.png" > /dev/null 2>&1
   done
@@ -31,10 +31,4 @@ for video_file in $video_folder/*.mp4; do
   mkdir -p $result_folder
   # Step 4: Run the main Python script
   python3 main.py --frame_dir "frames_folder" --result_folder "$result_folder" --chunked_videos_dir "chunked_videos"
-
-  # Clean up temporary files
-  rm -rf temp
-  rm -rf chunked_videos
-  rm -rf frames_folder
-  rm -rf timestamps.csv
 done
