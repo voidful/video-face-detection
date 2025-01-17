@@ -90,7 +90,7 @@ def main(args):
     ]
 
     results = []
-    for video_folder in tqdm(video_folders, desc="Processing video folders"):
+    for video_folder in tqdm(video_folders, desc=f"Processing video folders {video_folders}"):
         result = process_video_folder(video_folder)
         if result is not None:
             results.append(result)
